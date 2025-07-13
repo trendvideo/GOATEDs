@@ -800,6 +800,51 @@
             border: 3px solid var(--primary);
         }
         
+        /* Feedback button */
+        .feedback-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #25D366;
+            color: white;
+            padding: 15px;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .feedback-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+        }
+        
+        .feedback-tooltip {
+            position: absolute;
+            right: 70px;
+            background: var(--dark);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 14px;
+            white-space: nowrap;
+            opacity: 0;
+            transition: var(--transition);
+            pointer-events: none;
+        }
+        
+        .feedback-btn:hover .feedback-tooltip {
+            opacity: 1;
+            right: 80px;
+        }
+        
         /* Responsive adjustments */
         @media (max-width: 768px) {
             .container {
@@ -857,6 +902,18 @@
                 padding: 12px;
                 font-size: 14px;
             }
+            
+            .feedback-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 24px;
+                bottom: 15px;
+                right: 15px;
+            }
+            
+            .feedback-tooltip {
+                display: none;
+            }
         }
     </style>
 </head>
@@ -869,6 +926,12 @@
 
     <!-- Notification System -->
     <div id="notificationContainer"></div>
+
+    <!-- WhatsApp Feedback Button -->
+    <div class="feedback-btn" onclick="sendFeedback()">
+        <i class="fab fa-whatsapp"></i>
+        <span class="feedback-tooltip">Send feedback to admin</span>
+    </div>
 
     <!-- Login Container -->
     <div class="container" id="loginContainer">
@@ -990,7 +1053,7 @@
             <div class="profile-pic-container">
                 <div class="robot-avatar" id="userRobotAvatar">🤖</div>
                 <label class="profile-pic-upload">
-                    <input type="file" id="profilePicUpload" accept="image/*" onchange="uploadProfilePicture()" capture="camera">
+                    <input type="file" id="profilePicUpload" accept="image/*" onchange="uploadProfilePicture()" capture>
                     <i class="fas fa-camera"></i>
                 </label>
             </div>
@@ -1080,7 +1143,7 @@
             <div class="clan-banner">
                 <img id="clanBannerImg" src="" alt="Clan Banner">
                 <label class="clan-banner-upload" style="display: none;" id="clanBannerUploadBtn">
-                    <input type="file" id="clanBannerUpload" accept="image/*" onchange="uploadClanBanner()" capture="camera">
+                    <input type="file" id="clanBannerUpload" accept="image/*" onchange="uploadClanBanner()" capture>
                     <i class="fas fa-camera"></i> Change Banner
                 </label>
             </div>
@@ -1223,13 +1286,13 @@
             
             <div class="form-group">
                 <label for="clanLogo">Clan Logo</label>
-                <input type="file" id="clanLogo" accept="image/*" onchange="previewClanLogo()" capture="camera">
+                <input type="file" id="clanLogo" accept="image/*" onchange="previewClanLogo()" capture>
                 <img id="clanLogoPreview" class="image-preview" src="" alt="Clan Logo Preview">
             </div>
             
             <div class="form-group">
                 <label for="clanBanner">Clan Banner</label>
-                <input type="file" id="clanBanner" accept="image/*" onchange="previewClanBanner()" capture="camera">
+                <input type="file" id="clanBanner" accept="image/*" onchange="previewClanBanner()" capture>
                 <img id="clanBannerPreview" class="image-preview" src="" alt="Clan Banner Preview">
             </div>
             
@@ -1295,13 +1358,13 @@
                 
                 <div class="form-group">
                     <label for="websiteLogo">Website Logo</label>
-                    <input type="file" id="websiteLogo" accept="image/*" onchange="previewWebsiteLogo()" capture="camera">
+                    <input type="file" id="websiteLogo" accept="image/*" onchange="previewWebsiteLogo()" capture>
                     <img id="websiteLogoPreview" class="image-preview" src="" alt="Website Logo Preview">
                 </div>
                 
                 <div class="form-group">
                     <label for="websiteBackground">Background Image</label>
-                    <input type="file" id="websiteBackground" accept="image/*" onchange="previewWebsiteBackground()" capture="camera">
+                    <input type="file" id="websiteBackground" accept="image/*" onchange="previewWebsiteBackground()" capture>
                     <img id="websiteBackgroundPreview" class="image-preview" src="" alt="Background Preview">
                 </div>
                 
@@ -1334,8 +1397,8 @@
     </div>
 
     <script>
-        // Enhanced Database with more realistic data
-        let users = [
+        // Enhanced Database with localStorage persistence
+        let users = JSON.parse(localStorage.getItem('goatedClanUsers')) || [
             {
                 id: 1,
                 username: "player1",
@@ -1386,7 +1449,7 @@
             }
         ];
         
-        let applications = [
+        let applications = JSON.parse(localStorage.getItem('goatedClanApplications')) || [
             {
                 id: 1,
                 userId: 1,
@@ -1402,7 +1465,7 @@
             }
         ];
         
-        let activityLogs = [
+        let activityLogs = JSON.parse(localStorage.getItem('goatedClanActivityLogs')) || [
             {
                 id: 1,
                 type: "login",
@@ -1429,7 +1492,7 @@
             }
         ];
         
-        let notifications = [
+        let notifications = JSON.parse(localStorage.getItem('goatedClanNotifications')) || [
             {
                 id: 1,
                 userId: 2, // Admin user ID
@@ -1452,8 +1515,8 @@
             }
         ];
         
-        // Clan settings data
-        let clanSettings = {
+        // Clan settings data with localStorage persistence
+        let clanSettings = JSON.parse(localStorage.getItem('goatedClanSettings')) || {
             name: "GOATED Clan.CODM",
             tag: "GOAT",
             logo: "",
@@ -1509,8 +1572,8 @@
             ]
         };
         
-        // Website settings
-        let websiteSettings = {
+        // Website settings with localStorage persistence
+        let websiteSettings = JSON.parse(localStorage.getItem('goatedClanWebsiteSettings')) || {
             name: "GOATED Clan.CODM",
             tagline: "Elite Mobile Warfare | Season 7",
             logo: "",
@@ -1522,6 +1585,16 @@
         let currentUser = null;
         let unreadAdminNotifications = 0;
         let selectedGender = null;
+        
+        // Save data to localStorage
+        function saveDataToStorage() {
+            localStorage.setItem('goatedClanUsers', JSON.stringify(users));
+            localStorage.setItem('goatedClanApplications', JSON.stringify(applications));
+            localStorage.setItem('goatedClanActivityLogs', JSON.stringify(activityLogs));
+            localStorage.setItem('goatedClanNotifications', JSON.stringify(notifications));
+            localStorage.setItem('goatedClanSettings', JSON.stringify(clanSettings));
+            localStorage.setItem('goatedClanWebsiteSettings', JSON.stringify(websiteSettings));
+        }
         
         // Helper function to format dates
         function formatDate(dateString) {
@@ -1586,6 +1659,14 @@
             }
         }
         
+        // Send feedback via WhatsApp
+        function sendFeedback() {
+            const phoneNumber = "08159035074";
+            const message = "Hello GOATED Clan Admin, I have a suggestion/feedback about the website:";
+            const encodedMessage = encodeURIComponent(message);
+            window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, '_blank');
+        }
+        
         // Select gender during registration
         function selectGender(gender) {
             selectedGender = gender;
@@ -1633,13 +1714,14 @@
                 });
                 
                 currentUser.profilePic = e.target.result;
+                saveDataToStorage();
                 
                 // Update the profile pic display
                 const profilePicContainer = document.querySelector('.profile-pic-container');
                 profilePicContainer.innerHTML = `
                     <img id="userProfilePic" class="profile-pic" src="${e.target.result}" alt="Profile Picture">
                     <label class="profile-pic-upload">
-                        <input type="file" id="profilePicUpload" accept="image/*" onchange="uploadProfilePicture()" capture="camera">
+                        <input type="file" id="profilePicUpload" accept="image/*" onchange="uploadProfilePicture()" capture>
                         <i class="fas fa-camera"></i>
                     </label>
                 `;
@@ -1656,11 +1738,62 @@
                     timestamp: new Date().toISOString()
                 };
                 activityLogs.unshift(activity);
+                saveDataToStorage();
                 
                 hideLoading();
             };
             reader.onerror = function() {
                 showNotification('error', 'Error uploading profile picture');
+                hideLoading();
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        // Upload clan banner
+        function uploadClanBanner() {
+            const fileInput = document.getElementById('clanBannerUpload');
+            const file = fileInput.files[0];
+            
+            if (!file) return;
+            
+            if (!file.type.match('image.*')) {
+                showNotification('error', 'Please select an image file');
+                return;
+            }
+            
+            if (file.size > 5 * 1024 * 1024) { // 5MB limit
+                showNotification('error', 'Image size should be less than 5MB');
+                return;
+            }
+            
+            showLoading("Uploading clan banner...");
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                clanSettings.banner = e.target.result;
+                saveDataToStorage();
+                
+                document.getElementById('clanBannerImg').src = e.target.result;
+                document.getElementById('clanBannerImg').style.display = 'block';
+                
+                showNotification('success', 'Clan banner updated successfully!');
+                
+                // Log activity
+                const activity = {
+                    id: activityLogs.length + 1,
+                    type: "clan-settings",
+                    userId: currentUser.id,
+                    username: currentUser.username,
+                    message: `${currentUser.username} updated the clan banner`,
+                    timestamp: new Date().toISOString()
+                };
+                activityLogs.unshift(activity);
+                saveDataToStorage();
+                
+                hideLoading();
+            };
+            reader.onerror = function() {
+                showNotification('error', 'Error uploading clan banner');
                 hideLoading();
             };
             reader.readAsDataURL(file);
@@ -1683,6 +1816,7 @@
                 document.getElementById('clanLogoPreview').src = e.target.result;
                 document.getElementById('clanLogoPreview').style.display = 'block';
                 clanSettings.logo = e.target.result;
+                saveDataToStorage();
             };
             reader.readAsDataURL(file);
         }
@@ -1704,6 +1838,7 @@
                 document.getElementById('clanBannerPreview').src = e.target.result;
                 document.getElementById('clanBannerPreview').style.display = 'block';
                 clanSettings.banner = e.target.result;
+                saveDataToStorage();
             };
             reader.readAsDataURL(file);
         }
@@ -1725,6 +1860,7 @@
                 document.getElementById('websiteLogoPreview').src = e.target.result;
                 document.getElementById('websiteLogoPreview').style.display = 'block';
                 websiteSettings.logo = e.target.result;
+                saveDataToStorage();
             };
             reader.readAsDataURL(file);
         }
@@ -1746,6 +1882,7 @@
                 document.getElementById('websiteBackgroundPreview').src = e.target.result;
                 document.getElementById('websiteBackgroundPreview').style.display = 'block';
                 websiteSettings.background = e.target.result;
+                saveDataToStorage();
             };
             reader.readAsDataURL(file);
         }
@@ -1781,6 +1918,7 @@
                 
                 if (memberIndex !== -1) {
                     clanSettings.topMembers[memberIndex].avatar = e.target.result;
+                    saveDataToStorage();
                 }
                 
                 showNotification('success', 'Member avatar updated!');
@@ -1869,6 +2007,7 @@
                     timestamp: new Date().toISOString()
                 };
                 activityLogs.unshift(activity);
+                saveDataToStorage();
                 
                 // Check for unread notifications
                 if (user.isAdmin) {
@@ -1925,6 +2064,7 @@
                     timestamp: new Date().toISOString()
                 };
                 activityLogs.unshift(activity);
+                saveDataToStorage();
                 
                 // Check for unread notifications
                 unreadAdminNotifications = notifications.filter(n => n.userId === 2 && !n.read).length;
@@ -1998,6 +2138,7 @@
                 };
                 
                 users.push(newUser);
+                saveDataToStorage();
                 
                 // Log activity
                 const activity = {
@@ -2009,6 +2150,7 @@
                     timestamp: new Date().toISOString()
                 };
                 activityLogs.unshift(activity);
+                saveDataToStorage();
                 
                 // Notify admin
                 addUserNotification(
@@ -2057,7 +2199,7 @@
                 profilePicContainer.innerHTML = `
                     <img id="userProfilePic" class="profile-pic" src="${currentUser.profilePic}" alt="Profile Picture">
                     <label class="profile-pic-upload">
-                        <input type="file" id="profilePicUpload" accept="image/*" onchange="uploadProfilePicture()" capture="camera">
+                        <input type="file" id="profilePicUpload" accept="image/*" onchange="uploadProfilePicture()" capture>
                         <i class="fas fa-camera"></i>
                     </label>
                 `;
@@ -2492,7 +2634,7 @@
                 <div class="member-edit-fields">
                     <div class="member-avatar-edit">
                         <img id="memberAvatar_${memberId}" src="${avatar || 'https://via.placeholder.com/40'}" alt="${initials}">
-                        <input type="file" id="memberAvatarUpload_${memberId}" accept="image/*" style="display: none;" onchange="updateMemberAvatar('${memberId}')" capture="camera">
+                        <input type="file" id="memberAvatarUpload_${memberId}" accept="image/*" style="display: none;" onchange="updateMemberAvatar('${memberId}')" capture>
                         <label for="memberAvatarUpload_${memberId}" style="position: absolute; bottom: -5px; right: -5px; background: var(--primary); color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 12px; cursor: pointer;">+</label>
                     </div>
                     <div style="flex: 1;">
@@ -2604,6 +2746,8 @@
                     });
                 });
                 
+                saveDataToStorage();
+                
                 // Update clan info display
                 updateClanInfoDisplay();
                 
@@ -2621,6 +2765,7 @@
                     timestamp: new Date().toISOString()
                 };
                 activityLogs.unshift(activity);
+                saveDataToStorage();
                 
             } catch (error) {
                 document.getElementById('clanSettingsError').textContent = "Error saving clan settings: " + error.message;
@@ -2642,6 +2787,8 @@
                 websiteSettings.theme = document.getElementById('websiteTheme').value;
                 websiteSettings.allowRegistration = document.getElementById('websiteRegistration').value === 'true';
                 
+                saveDataToStorage();
+                
                 // Update website display
                 updateWebsiteDisplay();
                 
@@ -2659,6 +2806,7 @@
                     timestamp: new Date().toISOString()
                 };
                 activityLogs.unshift(activity);
+                saveDataToStorage();
                 
             } catch (error) {
                 document.getElementById('websiteSettingsError').textContent = "Error saving website settings: " + error.message;
@@ -2818,6 +2966,7 @@
                     }
                     return a;
                 });
+                saveDataToStorage();
                 
                 // Update user status if accepted
                 if (status === "Accepted") {
@@ -2827,6 +2976,7 @@
                         }
                         return user;
                     });
+                    saveDataToStorage();
                 }
                 
                 // Log activity
@@ -2839,6 +2989,7 @@
                     timestamp: new Date().toISOString()
                 };
                 activityLogs.unshift(activity);
+                saveDataToStorage();
                 
                 // Notify user
                 const notificationType = status === "Accepted" ? "success" : "warning";
@@ -2879,6 +3030,7 @@
                     }
                     return u;
                 });
+                saveDataToStorage();
                 
                 // Log activity
                 const activity = {
@@ -2890,6 +3042,7 @@
                     timestamp: new Date().toISOString()
                 };
                 activityLogs.unshift(activity);
+                saveDataToStorage();
                 
                 // Notify user
                 addUserNotification(
@@ -2922,6 +3075,7 @@
                 
                 users = users.filter(u => u.id !== userId);
                 applications = applications.filter(app => app.userId !== userId);
+                saveDataToStorage();
                 
                 // Log activity
                 const activity = {
@@ -2933,6 +3087,7 @@
                     timestamp: new Date().toISOString()
                 };
                 activityLogs.unshift(activity);
+                saveDataToStorage();
                 
                 // Notify user if they're currently logged in
                 if (currentUser && currentUser.id === userId) {
@@ -2959,6 +3114,7 @@
             };
             
             notifications.push(notification);
+            saveDataToStorage();
             
             // Update admin notification badge if needed
             if (userId === 2 && currentUser && currentUser.id === 2) {
@@ -2977,6 +3133,7 @@
                 }
                 return n;
             });
+            saveDataToStorage();
             
             if (currentUser && currentUser.id === 2) {
                 unreadAdminNotifications--;
@@ -3072,6 +3229,7 @@
                 };
                 
                 applications.push(newApp);
+                saveDataToStorage();
                 
                 // Update user status
                 users = users.map(user => {
@@ -3080,6 +3238,7 @@
                     }
                     return user;
                 });
+                saveDataToStorage();
                 
                 // Log activity
                 const activity = {
@@ -3091,6 +3250,7 @@
                     timestamp: new Date().toISOString()
                 };
                 activityLogs.unshift(activity);
+                saveDataToStorage();
                 
                 // Notify admin
                 addUserNotification(
@@ -3159,6 +3319,7 @@
                     }
                     return user;
                 });
+                saveDataToStorage();
                 
                 currentUser.password = newPassword;
                 
@@ -3172,6 +3333,7 @@
                     timestamp: new Date().toISOString()
                 };
                 activityLogs.unshift(activity);
+                saveDataToStorage();
                 
                 document.getElementById('passwordChangeError').textContent = "";
                 document.getElementById('passwordChangeSuccess').textContent = "Password changed successfully!";
@@ -3208,6 +3370,7 @@
                     timestamp: new Date().toISOString()
                 };
                 activityLogs.unshift(activity);
+                saveDataToStorage();
                 
                 // Notify admin
                 addUserNotification(
@@ -3221,6 +3384,7 @@
                 // Remove user data
                 users = users.filter(user => user.id !== currentUser.id);
                 applications = applications.filter(app => app.userId !== currentUser.id);
+                saveDataToStorage();
                 
                 // Logout
                 logout();
@@ -3242,6 +3406,7 @@
                     timestamp: new Date().toISOString()
                 };
                 activityLogs.unshift(activity);
+                saveDataToStorage();
             }
             
             currentUser = null;
