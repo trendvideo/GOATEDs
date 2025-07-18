@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto Trading App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            min-height: 100vh;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: #1a1a1a;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            font-size: 14px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+
+        .left-status {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .signal-bars {
+            display: flex;
+            gap: 2px;
+        }
+
+        .signal-bar {
+            width: 3px;
+            background: #fff;
+        }
+
+        .signal-bar:nth-child(1) { height: 4px; }
+        .signal-bar:nth-child(2) { height: 6px; }
+        .signal-bar:nth-child(3) { height: 8px; }
+        .signal-bar:nth-child(4) { height: 10px; }
+
+        .right-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .battery {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: #1a1a1a;
+        }
+
+        .menu-icon {
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .search-bar {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 20px;
+            padding: 8px 16px;
+            color: white;
+            width: 200px;
+        }
+
+        .search-bar::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .header-icons {
+            display: flex;
+            gap: 15px;
+            position: relative;
+        }
+
+        .notification-badge {
+            background: #ffd700;
+            color: #000;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            position: absolute;
+            top: -8px;
+            right: 45px;
+        }
+
+        .balance-section {
+            padding: 20px;
+            text-align: left;
+        }
+
+        .balance-label {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .balance-amount {
+            font-size: 48px;
+            font-weight: 300;
+            margin-bottom: 20px;
+        }
+
+        .add-funds-btn {
+            background: #ffd700;
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            float: right;
+        }
+
+        .pnl-section {
+            padding: 0 20px;
+            margin-bottom: 30px;
+        }
+
+        .pnl-text {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-around;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: rgba(255, 255, 255, 0.7);
+            gap: 8px;
+        }
+
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .nav-item:nth-child(1) .nav-icon { background: rgba(255, 255, 255, 0.1); }
+        .nav-item:nth-child(2) .nav-icon { background: rgba(255, 215, 0, 0.2); }
+        .nav-item:nth-child(3) .nav-icon { background: rgba(255, 255, 255, 0.1); }
+        .nav-item:nth-child(4) .nav-icon { background: rgba(255, 255, 255, 0.1); }
+        .nav-item:nth-child(5) .nav-icon { background: rgba(255, 255, 255, 0.1); }
+
+        .onboarding-card {
+            background: #ffd700;
+            color: #000;
+            margin: 0 20px 20px;
+            padding: 20px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .trade-btn {
+            background: #333;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .discover-card {
+            background: #ffd700;
+            color: #000;
+            margin: 0 20px 20px;
+            padding: 20px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .arrow-icon {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .market-tabs {
+            display: flex;
+            gap: 20px;
+            padding: 0 20px;
+            margin-bottom: 20px;
+        }
+
+        .market-tab {
+            color: rgba(255, 255, 255, 0.5);
+            text-decoration: none;
+            padding-bottom: 5px;
+            font-size: 16px;
+        }
+
+        .market-tab.active {
+            color: #ffd700;
+            border-bottom: 2px solid #ffd700;
+        }
+
+        .market-section {
+            padding: 0 20px;
+        }
+
+        .market-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .crypto-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .crypto-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .crypto-name {
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .crypto-price-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .crypto-price {
+            font-weight: bold;
+        }
+
+        .crypto-subprice {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 14px;
+        }
+
+        .crypto-change {
+            background: #4CAF50;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 400px;
+            background: #1a1a1a;
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .bottom-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: rgba(255, 255, 255, 0.7);
+            gap: 5px;
+        }
+
+        .bottom-nav-item.active {
+            color: #ffd700;
+        }
+
+        .bottom-nav-icon {
+            font-size: 20px;
+        }
+
+        .bottom-nav-text {
+            font-size: 12px;
+        }
+
+        .phone-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 400px;
+            height: 34px;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .home-indicator {
+            width: 134px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <div class="left-status">
+                <span>3G</span>
+                <div class="signal-bars">
+                    <div class="signal-bar"></div>
+                    <div class="signal-bar"></div>
+                    <div class="signal-bar"></div>
+                    <div class="signal-bar"></div>
+                </div>
+                <span>📶</span>
+                <span>📶</span>
+                <span>📧</span>
+                <span>📧</span>
+                <span>📧</span>
+                <span>•••</span>
+            </div>
+            <div class="right-status">
+                <span>🔔</span>
+                <span>🌙</span>
+                <div class="battery">
+                    <span>89</span>
+                    <span>🔋</span>
+                </div>
+                <span>11:24</span>
+            </div>
+        </div>
+
+        <!-- Header -->
+        <div class="header">
+            <div class="menu-icon">☰</div>
+            <input type="text" class="search-bar" placeholder="#AltcoinSeasonLoading">
+            <div class="header-icons">
+                <span>🔍</span>
+                <span>💬</span>
+                <span>🎧</span>
+                <span>🔗</span>
+                <div class="notification-badge">8</div>
+            </div>
+        </div>
+
+        <!-- Balance Section -->
+        <div class="balance-section">
+            <div class="balance-label">Est. Total Value(GBP) ▲</div>
+            <div class="balance-amount">£2,453</div>
+            <button class="add-funds-btn">Add Funds</button>
+        </div>
+
+        <!-- PNL Section -->
+        <div class="pnl-section">
+            <div class="pnl-text">Today's PNL £0.00 (+0.00%) ▽</div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="navigation">
+            <a href="#" class="nav-item">
+                <div class="nav-icon">💬</div>
+                <span>Chat</span>
+            </a>
+            <a href="#" class="nav-item">
+                <div class="nav-icon">👤⭐</div>
+                <span>Referral</span>
+            </a>
+            <a href="#" class="nav-item">
+                <div class="nav-icon">🎯</div>
+                <span>Simple Earn</span>
+            </a>
+            <a href="#" class="nav-item">
+                <div class="nav-icon">🎁</div>
+                <span>Rewards Hub</span>
+            </a>
+            <a href="#" class="nav-item">
+                <div class="nav-icon">⋮</div>
+                <span>More</span>
+            </a>
+        </div>
+
+        <!-- Onboarding Card -->
+        <div class="onboarding-card">
+            <div>
+                <div style="font-weight: bold; margin-bottom: 5px;">Onboarding Task</div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span>🎯</span>
+                    <span style="font-weight: bold;">Start Your First Trade</span>
+                </div>
+            </div>
+            <button class="trade-btn">Trade</button>
+        </div>
+
+        <!-- Discover Card -->
+        <div class="discover-card">
+            <span>Discover personalized home experiences!</span>
+            <span class="arrow-icon">→</span>
+        </div>
+
+        <!-- Market Tabs -->
+        <div class="market-tabs">
+            <a href="#" class="market-tab">ℹ</a>
+            <a href="#" class="market-tab">Alpha</a>
+            <a href="#" class="market-tab">New</a>
+            <a href="#" class="market-tab active">Gainers</a>
+            <a href="#" class="market-tab">Losers</a>
+            <a href="#" class="market-tab">24h</a>
+        </div>
+
+        <div class="market-tabs" style="margin-top: -10px;">
+            <a href="#" class="market-tab active" style="color: white;">Crypto</a>
+            <a href="#" class="market-tab">Spot</a>
+            <a href="#" class="market-tab">Futures</a>
+        </div>
+
+        <!-- Market Section -->
+        <div class="market-section">
+            <div class="market-header">
+                <span>Name</span>
+                <span>Last Price</span>
+                <span>24h chg%</span>
+            </div>
+
+            <div class="crypto-item">
+                <div class="crypto-info">
+                    <div class="crypto-name">FLOKI</div>
+                </div>
+                <div class="crypto-price-info">
+                    <div class="crypto-price">0.00013694</div>
+                    <div class="crypto-subprice">£0.00013694</div>
+                </div>
+                <div class="crypto-change">+41.18%</div>
+            </div>
+
+            <div class="crypto-item">
+                <div class="crypto-info">
+                    <div class="crypto-name">BONK</div>
+                </div>
+                <div class="crypto-price-info">
+                    <div class="crypto-price">0.00003756</div>
+                    <div class="crypto-subprice">£0.00003756</div>
+                </div>
+                <div class="crypto-change">+28.72%</div>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <a href="#" class="bottom-nav-item active">
+                <div class="bottom-nav-icon">🏠</div>
+                <div class="bottom-nav-text">Home</div>
+            </a>
+            <a href="#" class="bottom-nav-item">
+                <div class="bottom-nav-icon">📈</div>
+                <div class="bottom-nav-text">Markets</div>
+            </a>
+            <a href="#" class="bottom-nav-item">
+                <div class="bottom-nav-icon">💱</div>
+                <div class="bottom-nav-text">Trade</div>
+            </a>
+            <a href="#" class="bottom-nav-item">
+                <div class="bottom-nav-icon">📋</div>
+                <div class="bottom-nav-text">Futures</div>
+            </a>
+            <a href="#" class="bottom-nav-item">
+                <div class="bottom-nav-icon">💼</div>
+                <div class="bottom-nav-text">Assets</div>
+            </a>
+        </div>
+
+        <!-- Phone Navigation -->
+        <div class="phone-nav">
+            <div class="home-indicator"></div>
+        </div>
+    </div>
+</body>
+</html>
