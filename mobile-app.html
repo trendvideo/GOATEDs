@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OWealth Mobile App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .status-bar {
+            background-color: #fff;
+            padding: 8px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .status-left {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .status-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .battery {
+            background-color: #333;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .header {
+            background-color: #fff;
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+        }
+
+        .profile-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .greeting {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .header-icons {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .help-icon, .scan-icon, .notification-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f0f0f0;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .help-icon {
+            background-color: #ff4757;
+            color: white;
+        }
+
+        .notification-icon {
+            position: relative;
+            background-color: #f0f0f0;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background-color: #ff4757;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .balance-card {
+            background: linear-gradient(135deg, #2ed573 0%, #17a085 100%);
+            margin: 16px;
+            border-radius: 16px;
+            padding: 24px;
+            color: white;
+            box-shadow: 0 4px 20px rgba(46, 213, 115, 0.3);
+        }
+
+        .balance-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .balance-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 16px;
+        }
+
+        .balance-amount {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 16px;
+        }
+
+        .card-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .add-money-btn {
+            background-color: white;
+            color: #2ed573;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .transaction-item {
+            background-color: white;
+            margin: 8px 16px;
+            padding: 16px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .transaction-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .transaction-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #a55eea 0%, #8b5cf6 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+
+        .transaction-details h4 {
+            font-size: 16px;
+            margin-bottom: 4px;
+            color: #333;
+        }
+
+        .transaction-details p {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .transaction-amount {
+            text-align: right;
+        }
+
+        .amount {
+            font-size: 16px;
+            font-weight: bold;
+            color: #2ed573;
+            margin-bottom: 4px;
+        }
+
+        .status {
+            font-size: 12px;
+            color: #2ed573;
+        }
+
+        .services-grid {
+            padding: 16px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+
+        .service-item {
+            text-align: center;
+        }
+
+        .service-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            background-color: #e8f5e8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 8px;
+            font-size: 24px;
+            color: #2ed573;
+            position: relative;
+        }
+
+        .service-label {
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .promo-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background-color: #ff4757;
+            color: white;
+            font-size: 8px;
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .welcome-banner {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            margin: 16px;
+            border-radius: 12px;
+            padding: 16px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .banner-content h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .voucher-details {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .voucher-icon {
+            width: 32px;
+            height: 32px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .voucher-text h4 {
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .voucher-text p {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .go-btn {
+            background-color: #2ed573;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: bold;
+        }
+
+        .bottom-nav {
+            background-color: white;
+            padding: 12px 0;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin-top: auto;
+        }
+
+        .nav-item {
+            text-align: center;
+            color: #666;
+        }
+
+        .nav-item.active {
+            color: #2ed573;
+        }
+
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            margin: 0 auto 4px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-item.active .nav-icon {
+            background-color: #2ed573;
+            color: white;
+        }
+
+        .nav-label {
+            font-size: 12px;
+        }
+
+        .floating-btn {
+            position: fixed;
+            bottom: 80px;
+            right: 16px;
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #2ed573 0%, #17a085 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            box-shadow: 0 4px 20px rgba(46, 213, 115, 0.4);
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <!-- Status Bar -->
+    <div class="status-bar">
+        <div class="status-left">
+            <span>36</span>
+            <span>📶</span>
+            <span>📶</span>
+            <span>✉️</span>
+            <span>P</span>
+            <span>📱</span>
+            <span>⚫</span>
+            <span>✉️</span>
+        </div>
+        <div class="status-right">
+            <span>🔔</span>
+            <span>🌙</span>
+            <span class="battery">87</span>
+            <span>🔋</span>
+            <span>11:17</span>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+        <div class="profile-section">
+            <div class="profile-pic">D</div>
+            <div class="greeting">Hi, Ddanny</div>
+        </div>
+        <div class="header-icons">
+            <div class="help-icon">HELP</div>
+            <div class="scan-icon">📷</div>
+            <div class="notification-icon">
+                🔔
+                <div class="notification-badge">6</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Balance Card -->
+    <div class="balance-card">
+        <div class="balance-header">
+            <div class="balance-label">
+                ✅ Available Balance ⭕
+            </div>
+            <div>Transaction History ></div>
+        </div>
+        <div class="balance-amount">₦9.06 ></div>
+        <div class="card-actions">
+            <div></div>
+            <button class="add-money-btn">+ Add Money</button>
+        </div>
+    </div>
+
+    <!-- Transaction Item -->
+    <div class="transaction-item">
+        <div class="transaction-left">
+            <div class="transaction-icon">%</div>
+            <div class="transaction-details">
+                <h4>OWealth Interest Earned</h4>
+                <p>May 28th, 02:19:28</p>
+            </div>
+        </div>
+        <div class="transaction-amount">
+            <div class="amount">+₦0.09</div>
+            <div class="status">Successful</div>
+        </div>
+    </div>
+
+    <!-- Services Grid -->
+    <div class="services-grid">
+        <div class="service-item">
+            <div class="service-icon">👤</div>
+            <div class="service-label">To OPay</div>
+        </div>
+        <div class="service-item">
+            <div class="service-icon">🏛️</div>
+            <div class="service-label">To Bank</div>
+        </div>
+        <div class="service-item">
+            <div class="service-icon">📤</div>
+            <div class="service-label">Withdraw</div>
+        </div>
+        <div class="service-item">
+            <div class="service-icon"></div>
+            <div class="service-label"></div>
+        </div>
+        <div class="service-item">
+            <div class="service-icon">
+                📊
+                <div class="promo-badge">Up to 6%</div>
+            </div>
+            <div class="service-label">Airtime</div>
+        </div>
+        <div class="service-item">
+            <div class="service-icon">
+                📱
+                <div class="promo-badge">Up to 6%</div>
+            </div>
+            <div class="service-label">Data</div>
+        </div>
+        <div class="service-item">
+            <div class="service-icon">⚽</div>
+            <div class="service-label">Betting</div>
+        </div>
+        <div class="service-item">
+            <div class="service-icon">📺</div>
+            <div class="service-label">TV</div>
+        </div>
+        <div class="service-item">
+            <div class="service-icon">💰</div>
+            <div class="service-label">Safebox</div>
+        </div>
+        <div class="service-item">
+            <div class="service-icon">🤝</div>
+            <div class="service-label">Loan</div>
+        </div>
+        <div class="service-item">
+            <div class="service-icon">💌</div>
+            <div class="service-label">Invitation</div>
+        </div>
+        <div class="service-item">
+            <div class="service-icon">📧</div>
+            <div class="service-label">More</div>
+        </div>
+    </div>
+
+    <!-- Welcome Banner -->
+    <div class="welcome-banner">
+        <div class="banner-content">
+            <h3>Welcome bonus just for you! 🎁</h3>
+            <div class="voucher-details">
+                <div class="voucher-icon">📱</div>
+                <div class="voucher-text">
+                    <h4>Airtime&Data Voucher</h4>
+                    <p>Get ₦100 airtime&₦100 data for free</p>
+                </div>
+            </div>
+        </div>
+        <button class="go-btn">GO</button>
+    </div>
+
+    <!-- Floating Action Button -->
+    <div class="floating-btn">💬</div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <div class="nav-item active">
+            <div class="nav-icon">🏠</div>
+            <div class="nav-label">Home</div>
+        </div>
+        <div class="nav-item">
+            <div class="nav-icon">🎁</div>
+            <div class="nav-label">Rewards</div>
+        </div>
+        <div class="nav-item">
+            <div class="nav-icon">📈</div>
+            <div class="nav-label">Finance</div>
+        </div>
+        <div class="nav-item">
+            <div class="nav-icon">💳</div>
+            <div class="nav-label">Cards</div>
+        </div>
+        <div class="nav-item">
+            <div class="nav-icon">👤</div>
+            <div class="nav-label">Me</div>
+        </div>
+    </div>
+</body>
+</html>
